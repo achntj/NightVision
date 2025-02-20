@@ -32,6 +32,14 @@ def normalize_average(img, p, t=None):
     return Image.fromarray(img)
 
 
+def concat_image(a, b):
+    x = a.size[0] + b.size[0]
+    new = Image.new('RGB', (x, a.size[1]))
+    new.paste(a, (0, 0))
+    new.paste(b, (a.size[0], 0))
+    return new
+
+
 def report(img, name):
     print(f'Image: {name}')
     print(f'  min: {np.min(img)}')
