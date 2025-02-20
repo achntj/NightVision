@@ -22,6 +22,9 @@ def normalize_average(img, p, t=None):
     pixels = img.flatten()
     pixels = np.sort(pixels)
     sample = pixels[int(p * np.size(pixels))]
+    # prevent taking the log of zero
+    if sample == 0:
+        sample = pixels[pixels.nonzero()][0]
 
     exp = math.log(t) / math.log(sample)
     img = np.pow(img, exp)
@@ -44,12 +47,13 @@ if __name__ == '__main__':
         path = os.path.basename(path)
         basename = os.path.splitext(path)[0]
         return f'output/{basename}_{mod}.png'
-    path = sys.argv[1]
-    img = Image.open(path)
-    report(img, 'original')
-    p = 0.5
-    t = 0.25
-    mean_norm = normalize_average(img, p, t)
-    report(mean_norm, f'normalized average ({p=}, {t=})')
-    mean_norm.save(outpath(path, 'bright'))
+    assert len(sys.argv) > 1
+    for path in sys.argv[1:]:
+        img = Image.open(path)
+        report(img, f'{path} (original)')
+        p = 0.5
+        t = 0.25
+        mean_norm = normalize_average(img, p, t)
+        report(mean_norm, f'{path} normalized ({p=}, {t=})')
+        mean_norm.save(outpath(path, 'bright'))
 
