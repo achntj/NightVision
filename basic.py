@@ -22,7 +22,7 @@ def normalize_average(img, p, t=None):
     pixels = img.flatten()
     pixels = np.sort(pixels)
     sample = pixels[int(p * np.size(pixels))]
-    # prevent taking the log of zero
+    # prevent taking the log of zero by selecting the lowest intensity nonzero pixel
     if sample == 0:
         sample = pixels[pixels.nonzero()][0]
 
@@ -32,11 +32,13 @@ def normalize_average(img, p, t=None):
     return Image.fromarray(img)
 
 
-def concat_image(a, b):
-    x = a.size[0] + b.size[0]
-    new = Image.new('RGB', (x, a.size[1]))
-    new.paste(a, (0, 0))
-    new.paste(b, (a.size[0], 0))
+def concat_images(*imgs):
+    x = sum(img.size[0] for img in imgs)
+    new = Image.new('RGB', (x, imgs[0].size[1]))
+    offset = 0
+    for img in imgs:
+        new.paste(img, (offset, 0))
+        offset += img.size[0]
     return new
 
 
@@ -61,7 +63,7 @@ if __name__ == '__main__':
         report(img, f'{path} (original)')
         p = 0.5
         t = 0.25
-        mean_norm = normalize_average(img, p, t)
-        report(mean_norm, f'{path} normalized ({p=}, {t=})')
-        mean_norm.save(outpath(path, 'bright'))
+        normalized = normalize_average(img, p, t)
+        report(normalized, f'{path} normalized ({p=}, {t=})')
+        concat_images(img, normalized).save(outpath(path, 'test'))
 
