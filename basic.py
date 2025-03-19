@@ -47,6 +47,7 @@ def report(img, name):
     print(f'  min: {np.min(img)}')
     print(f'  max: {np.max(img)}')
     print(f'  avg: {np.mean(img)}')
+    print(f'  std: {np.std(img)}')
 
 
 if __name__ == '__main__':
@@ -62,8 +63,9 @@ if __name__ == '__main__':
         img = Image.open(path)
         report(img, f'{path} (original)')
         p = 0.5
-        t = 0.25
+        t = 0.37 # target an average brightness around 95
         normalized = normalize_average(img, p, t)
         report(normalized, f'{path} normalized ({p=}, {t=})')
-        concat_images(img, normalized).save(outpath(path, 'test'))
+        # concat_images(img, normalized).save(outpath(path, 'test'))
+        normalized.save(outpath(path, 'bright'))
 
