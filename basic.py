@@ -17,11 +17,7 @@ def normalize_average(img, p, t=None):
     if t is None: t = p
     img = img - np.min(img)
     img = img / np.max(img)
-    # obviously sorting every pixel of the image is not the most efficient.
-    # a quickselect algorithm would be better but I don't think that's built into numpy
-    pixels = img.flatten()
-    pixels = np.sort(pixels)
-    sample = pixels[int(p * np.size(pixels))]
+    sample = np.percentile(img, p*100)
     # prevent taking the log of zero by selecting the lowest intensity nonzero pixel
     if sample == 0:
         sample = pixels[pixels.nonzero()][0]
